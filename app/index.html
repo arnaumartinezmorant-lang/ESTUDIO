@@ -110,6 +110,33 @@
       </div>
     </section>
 
+    <!-- Pantalla RESUMEN -->
+    <section id="resumen" class="screen">
+      <div class="quiz-head">
+        <button id="btnResumenExit" class="btn-ghost">← Salir</button>
+        <span id="resumenTitle" class="quiz-title"></span>
+        <span class="progress"></span>
+      </div>
+      <article id="resumenBody" class="resumen-body"></article>
+      <div class="result-actions">
+        <button id="btnResumenExit2" class="btn-ghost" onclick="document.getElementById('btnResumenExit').click()">Volver al inicio</button>
+      </div>
+    </section>
+
+    <!-- Pantalla COMPLETAR (cloze) -->
+    <section id="huecos" class="screen">
+      <div class="quiz-head">
+        <button id="btnHuecosExit" class="btn-ghost">← Salir</button>
+        <span id="huecosTitle" class="quiz-title"></span>
+        <span id="huecosProgress" class="progress"></span>
+      </div>
+      <div id="huecosBox" class="cloze-box"></div>
+      <div class="quiz-foot">
+        <span id="huecosScore" class="score-live"></span>
+        <button id="btnHuecosNext" class="btn-primary" disabled>Siguiente →</button>
+      </div>
+    </section>
+
     <!-- Pantalla VERDADERO / FALSO -->
     <section id="vf" class="screen">
       <div class="quiz-head">
@@ -149,8 +176,12 @@
   <script src="data/tema04_extra.js"></script>
   <script src="data/tema05.js"></script>
   <script src="data/tema05_extra.js"></script>
+  <script src="data/tema06.js"></script>
   <!-- Repaso (flashcards, relacionar, verdadero/falso) -->
   <script src="data/repaso.js"></script>
+  <script src="data/repaso_extra.js"></script>
+  <!-- Resúmenes visuales -->
+  <script src="data/resumenes.js"></script>
   <!-- Lógica -->
   <script src="app.js"></script>
 </body>

@@ -282,3 +282,54 @@ window.REPASO = {
     ]
   }
 };
+
+
+// ===================== TEMA 6 (añadido) =====================
+window.REPASO["tema06"] = {
+  flashcards: [
+    { t: "Capa de transporte", d: "Capa 4 de OSI; comunicación extremo a extremo entre aplicaciones." },
+    { t: "Frase clave", d: "IP conecta máquinas; la capa de transporte conecta aplicaciones." },
+    { t: "Puerto", d: "Número (0–65535) que identifica una aplicación/servicio en un host." },
+    { t: "Segmento / Datagrama", d: "PDU de la capa de transporte (segmento en TCP, datagrama en UDP)." },
+    { t: "Multiplexación", d: "Emisor: junta datos de varias apps y los etiqueta con un puerto." },
+    { t: "Demultiplexación", d: "Receptor: entrega cada segmento a la aplicación según el puerto." },
+    { t: "Control de errores", d: "Checksum, ACK y retransmisión." },
+    { t: "Control de flujo", d: "Evita saturar al receptor (ventana deslizante)." },
+    { t: "Control de congestión", d: "Evita el colapso de la red ajustando la velocidad de envío." },
+    { t: "Puertos bien conocidos", d: "0–1023, servicios estándar (HTTP 80, HTTPS 443, DNS 53, SSH 22)." },
+    { t: "Puertos registrados", d: "1024–49151, aplicaciones concretas (PostgreSQL 5432)." },
+    { t: "Puertos dinámicos", d: "49152–65535, temporales asignados a los clientes." },
+    { t: "TCP", d: "Orientado a conexión, fiable, ordenado, con control de flujo/congestión; más lento." },
+    { t: "UDP", d: "Sin conexión, no fiable, sin orden, muy rápido y liviano." },
+    { t: "Three-Way Handshake", d: "SYN → SYN+ACK → ACK para abrir conexión TCP." },
+    { t: "Flags TCP", d: "URG, ACK, PSH, RST, SYN, FIN." },
+    { t: "Número de secuencia", d: "Identifica el primer byte del segmento; permite reensamblar en orden." },
+    { t: "NAT", d: "Permite que varios equipos privados compartan una IP pública (en el router)." },
+    { t: "Tabla NAT", d: "Relaciona IP privada, puerto privado, IP pública y puerto público." },
+    { t: "QUIC", d: "Transporte moderno sobre UDP (Google); base de HTTP/3, TLS integrado." }
+  ],
+  relacionar: [
+    { a: "TCP", b: "Fiable / orientado a conexión" },
+    { a: "UDP", b: "Rápido / sin conexión" },
+    { a: "HTTP", b: "Puerto 80" },
+    { a: "HTTPS", b: "Puerto 443" },
+    { a: "DNS", b: "Puerto 53 (UDP)" },
+    { a: "SSH", b: "Puerto 22" },
+    { a: "SYN→SYN+ACK→ACK", b: "Three-Way Handshake" },
+    { a: "NAT", b: "Comparte una IP pública" },
+    { a: "QUIC", b: "HTTP/3 sobre UDP" }
+  ],
+  vf: [
+    { s: "La capa de transporte conecta aplicaciones, mientras que IP conecta máquinas.", v: true, e: "Es la frase clave del tema." },
+    { s: "UDP es orientado a conexión y fiable.", v: false, e: "Eso es TCP; UDP es sin conexión y no fiable." },
+    { s: "El Three-Way Handshake de TCP es SYN → SYN+ACK → ACK.", v: true, e: "Sincroniza los números de secuencia." },
+    { s: "HTTPS utiliza el puerto 443.", v: true, e: "HTTP usa el 80 y HTTPS el 443." },
+    { s: "Los puertos van del 0 al 65535.", v: true, e: "16 bits: 2^16 valores posibles." },
+    { s: "NAT permite que varios dispositivos compartan una sola IP pública.", v: true, e: "Resuelve la escasez de IPv4; se implementa en el router." },
+    { s: "UDP garantiza la entrega ordenada de los segmentos.", v: false, e: "UDP no garantiza orden ni entrega; eso lo hace TCP." },
+    { s: "QUIC se construye sobre UDP y es la base de HTTP/3.", v: true, e: "Implementa fiabilidad, congestión y TLS sobre UDP." },
+    { s: "El control de flujo evita que el emisor sature al receptor.", v: true, e: "Mediante la ventana deslizante." },
+    { s: "La suma de verificación de UDP es obligatoria en IPv4.", v: false, e: "Es opcional en IPv4 y obligatoria en IPv6." },
+    { s: "El flag FIN de TCP cierra la conexión de forma ordenada.", v: true, e: "RST la cierra de forma abrupta." }
+  ]
+};

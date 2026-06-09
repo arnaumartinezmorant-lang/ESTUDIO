@@ -3,7 +3,7 @@
   "use strict";
 
   const TEMAS = window.TEMAS || {};
-  const ORDEN = ["tema01", "tema02", "tema02_organismos", "tema03", "tema04", "tema05"];
+  const ORDEN = ["tema01", "tema02", "tema02_organismos", "tema03", "tema04", "tema05", "tema06"];
 
   // Estado del test en curso
   let state = {
@@ -67,17 +67,22 @@
       const n = tema.preguntas.length;
       const best = getBest(key);
       const hasRepaso = !!(window.REPASO && window.REPASO[key]);
+      const hasResumen = !!(window.RESUMEN && window.RESUMEN[key]);
       const card = el("div", "tema-card");
       let html =
         `<h3>${escapeHTML(tema.titulo)}</h3>` +
         `<span class="count">${n} preguntas</span>` +
         (best != null ? `<span class="best">🏆 Mejor resultado: ${best}%</span>` : `<span class="best">Sin intentos todavía</span>`) +
         `<div class="mode-row">`;
+      if (hasResumen) {
+        html += `<button class="mode-btn resumen" data-mode="resumen">📖 Resumen</button>`;
+      }
       html += `<button class="mode-btn primary" data-mode="test">📝 Test</button>`;
       if (hasRepaso) {
         html += `<button class="mode-btn" data-mode="flash">🃏 Flashcards</button>`;
         html += `<button class="mode-btn" data-mode="match">🔗 Relacionar</button>`;
         html += `<button class="mode-btn" data-mode="vf">✔️ V / F</button>`;
+        html += `<button class="mode-btn" data-mode="huecos">🧩 Completar</button>`;
       }
       html += `</div>`;
       card.innerHTML = html;
@@ -88,6 +93,8 @@
           else if (m === "flash") startFlashcards(key);
           else if (m === "match") startMatching(key);
           else if (m === "vf") startVF(key);
+          else if (m === "huecos") startHuecos(key);
+          else if (m === "resumen") startResumen(key);
         });
       });
       list.appendChild(card);
@@ -372,6 +379,67 @@
     }
   }
 
+  // ----- RESUMEN -----
+  function startResumen(key) {
+    $("#resumenTitle").textContent = TEMAS[key].titulo;
+    $("#resumenBody").innerHTML = window.RESUMEN[key];
+    show("resumen");
+  }
+
+  // ----- COMPLETAR (cloze, definición → término) -----
+  let cloze = { items: [], idx: 0, aciertos: 0, key: null };
+  function startHuecos(key) {
+    const cards = window.REPASO[key].flashcards;
+    const terms = cards.map((c) => c.t);
+    // Construir items: definición + 4 opciones de término
+    let items = shuffle(cards).map((c) => {
+      const distract = shuffle(terms.filter((t) => t !== c.t)).slice(0, 3);
+      const opts = shuffle([c.t].concat(distract));
+      return { def: c.d, answer: c.t, options: opts };
+    });
+    cloze = { items: items, idx: 0, aciertos: 0, key: key };
+    $("#huecosTitle").textContent = TEMAS[key].titulo;
+    show("huecos");
+    renderHuecos();
+  }
+  function renderHuecos() {
+    const it = cloze.items[cloze.idx];
+    $("#huecosProgress").textContent = `Definición ${cloze.idx + 1} de ${cloze.items.length}`;
+    $("#huecosScore").textContent = `Aciertos: ${cloze.aciertos}`;
+    const box = $("#huecosBox");
+    box.innerHTML = "";
+    box.appendChild(el("p", "cloze-text",
+      `¿A qué término corresponde?<br><span class="cloze-gap">_______</span> : ${escapeHTML(it.def)}`));
+    const opts = el("div", "cloze-options");
+    it.options.forEach((opt) => {
+      const b = el("button", "cloze-opt");
+      b.textContent = opt;
+      b.addEventListener("click", () => answerHuecos(opt, b, opts, it));
+      opts.appendChild(b);
+    });
+    box.appendChild(opts);
+    $("#btnHuecosNext").disabled = true;
+    $("#btnHuecosNext").textContent = cloze.idx === cloze.items.length - 1 ? "Finalizar" : "Siguiente →";
+  }
+  function answerHuecos(opt, btn, container, it) {
+    const buttons = container.querySelectorAll(".cloze-opt");
+    buttons.forEach((b) => {
+      b.disabled = true;
+      if (b.textContent === it.answer) b.classList.add("correct");
+    });
+    if (opt === it.answer) cloze.aciertos++;
+    else btn.classList.add("wrong");
+    $("#huecosScore").textContent = `Aciertos: ${cloze.aciertos}`;
+    $("#btnHuecosNext").disabled = false;
+  }
+  function nextHuecos() {
+    if (cloze.idx < cloze.items.length - 1) { cloze.idx++; renderHuecos(); }
+    else {
+      alert(`Completar terminado: ${cloze.aciertos} de ${cloze.items.length} aciertos.`);
+      renderHome(); show("home");
+    }
+  }
+
   // ===================================================
 
   // ----- Eventos globales -----
@@ -403,5 +471,10 @@
     $("#btnFalso").addEventListener("click", () => answerVF(false));
     $("#btnVfNext").addEventListener("click", nextVF);
     $("#btnVfExit").addEventListener("click", () => { renderHome(); show("home"); });
+    // Resumen
+    $("#btnResumenExit").addEventListener("click", () => { renderHome(); show("home"); });
+    // Completar (cloze)
+    $("#btnHuecosNext").addEventListener("click", nextHuecos);
+    $("#btnHuecosExit").addEventListener("click", () => { renderHome(); show("home"); });
   });
 })();
