@@ -3,7 +3,7 @@
   "use strict";
 
   const TEMAS = window.TEMAS || {};
-  const ORDEN = ["tema01", "tema02", "tema03", "tema04", "tema05"];
+  const ORDEN = ["tema01", "tema02", "tema02_organismos", "tema03", "tema04", "tema05"];
 
   // Estado del test en curso
   let state = {
