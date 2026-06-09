@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tests de Redes · Estudio por temas</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🖧 Tests de Redes</h1>
+    <p class="subtitle">Planificación y administración de redes · Preguntas tipo test por tema</p>
+  </header>
+
+  <main id="app">
+    <!-- Pantalla de inicio: selección de tema -->
+    <section id="home" class="screen active">
+      <h2>Elige un tema</h2>
+      <div id="temaList" class="tema-grid"></div>
+
+      <div class="options-panel">
+        <h3>Opciones del test</h3>
+        <label class="opt">
+          <input type="checkbox" id="optShuffle" checked />
+          Barajar el orden de las preguntas
+        </label>
+        <label class="opt">
+          <input type="checkbox" id="optShuffleOpts" checked />
+          Barajar el orden de las respuestas
+        </label>
+        <label class="opt">
+          <input type="checkbox" id="optInstant" checked />
+          Mostrar si acierto o fallo al instante
+        </label>
+        <label class="opt">
+          Número de preguntas:
+          <select id="optCount">
+            <option value="0">Todas</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <!-- Pantalla del test -->
+    <section id="quiz" class="screen">
+      <div class="quiz-head">
+        <button id="btnExit" class="btn-ghost">← Salir</button>
+        <span id="quizTitle" class="quiz-title"></span>
+        <span id="progress" class="progress"></span>
+      </div>
+      <div class="progress-bar"><div id="progressFill"></div></div>
+
+      <div id="questionBox" class="question-box"></div>
+
+      <div class="quiz-foot">
+        <span id="scoreLive" class="score-live"></span>
+        <button id="btnNext" class="btn-primary" disabled>Siguiente →</button>
+      </div>
+    </section>
+
+    <!-- Pantalla de resultados -->
+    <section id="result" class="screen">
+      <h2>Resultado</h2>
+      <div id="scoreCircle" class="score-circle"><span id="scorePct">0%</span></div>
+      <p id="scoreText" class="score-text"></p>
+      <div id="reviewList" class="review-list"></div>
+      <div class="result-actions">
+        <button id="btnRetry" class="btn-primary">Repetir test</button>
+        <button id="btnRetryFails" class="btn-secondary">Repasar solo fallos</button>
+        <button id="btnHome" class="btn-ghost">Volver al inicio</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Contenido basado en los temas 1–5 del módulo. Material de autoestudio.</p>
+  </footer>
+
+  <!-- Datos de los temas -->
+  <script src="data/tema01.js"></script>
+  <script src="data/tema02.js"></script>
+  <script src="data/tema03.js"></script>
+  <script src="data/tema04.js"></script>
+  <script src="data/tema05.js"></script>
+  <!-- Lógica -->
+  <script src="app.js"></script>
+</body>
+</html>
