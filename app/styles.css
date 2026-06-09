@@ -476,3 +476,14 @@ body {
 .cloze-opt:hover:not(:disabled) { border-color: var(--accent); background: #2d3c54; }
 .cloze-opt.correct { background: var(--ok-bg); border-color: var(--ok); }
 .cloze-opt.wrong { background: var(--bad-bg); border-color: var(--bad); }
+
+
+
+/* ---- Resumen ampliado ---- */
+.resumen-body .rs-hr { border: none; border-top: 2px dashed var(--border); margin: 28px 0 8px; }
+.resumen-body .rs-h2 {
+  font-size: 1.35rem;
+  color: #f59e0b;
+  margin: 6px 0 14px;
+  text-align: center;
+}
