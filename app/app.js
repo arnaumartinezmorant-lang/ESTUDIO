@@ -5,6 +5,26 @@
   const TEMAS = window.TEMAS || {};
   const ORDEN = ["tema01", "tema02", "tema02_organismos", "tema03", "tema04", "tema05", "tema06"];
 
+  // Tests combinados (mezclan los bancos de varios temas)
+  const COMBOS = [
+    { key: "combo_45", titulo: "🔀 Combinado · Temas 4 + 5", temas: ["tema04", "tema05"] },
+    { key: "combo_no3", titulo: "🔀 Combinado · Todos MENOS Tema 3", temas: ["tema01", "tema02", "tema02_organismos", "tema04", "tema05", "tema06"] }
+  ];
+  function getCombo(key) { return COMBOS.find((c) => c.key === key) || null; }
+
+  // Devuelve { titulo, preguntas } tanto para temas normales como combinados
+  function getTema(key) {
+    const combo = getCombo(key);
+    if (combo) {
+      let preguntas = [];
+      combo.temas.forEach((tk) => {
+        if (TEMAS[tk]) preguntas = preguntas.concat(TEMAS[tk].preguntas);
+      });
+      return { titulo: combo.titulo, preguntas: preguntas };
+    }
+    return TEMAS[key];
+  }
+
   // Estado del test en curso
   let state = {
     temaKey: null,
@@ -99,11 +119,25 @@
       });
       list.appendChild(card);
     });
+
+    // Tarjetas de tests combinados
+    COMBOS.forEach((combo) => {
+      const pool = getTema(combo.key).preguntas;
+      const best = getBest(combo.key);
+      const card = el("div", "tema-card combo-card");
+      card.innerHTML =
+        `<h3>${escapeHTML(combo.titulo)}</h3>` +
+        `<span class="count">${pool.length} preguntas</span>` +
+        (best != null ? `<span class="best">🏆 Mejor resultado: ${best}%</span>` : `<span class="best">Sin intentos todavía</span>`) +
+        `<div class="mode-row"><button class="mode-btn primary" data-mode="test">📝 Hacer test</button></div>`;
+      card.querySelector(".mode-btn").addEventListener("click", () => startQuiz(combo.key));
+      list.appendChild(card);
+    });
   }
 
   // ----- Iniciar test -----
   function buildQuestions(temaKey, soloFallos) {
-    const tema = TEMAS[temaKey];
+    const tema = getTema(temaKey);
     let base = soloFallos && soloFallos.length ? soloFallos : tema.preguntas;
 
     let preguntas = base.map((p) => p); // copia de referencias
@@ -129,7 +163,7 @@
     state.respondidas = [];
     state.instant = $("#optInstant").checked;
 
-    $("#quizTitle").textContent = TEMAS[temaKey].titulo;
+    $("#quizTitle").textContent = getTema(temaKey).titulo;
     show("quiz");
     renderQuestion();
   }

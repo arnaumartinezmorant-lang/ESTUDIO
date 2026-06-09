@@ -487,3 +487,14 @@ body {
   margin: 6px 0 14px;
   text-align: center;
 }
+
+
+
+/* ---- Tarjetas de tests combinados ---- */
+.tema-card.combo-card {
+  border-color: #a855f7;
+  background: linear-gradient(160deg, #271b3d, #1e293b);
+}
+.tema-card.combo-card:hover { box-shadow: 0 8px 24px rgba(168,85,247,0.20); border-color: #c084fc; }
+.tema-card.combo-card h3 { color: #c084fc; }
+.tema-card.combo-card .count { color: #c084fc; }
