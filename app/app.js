@@ -66,12 +66,30 @@
       if (!tema) return;
       const n = tema.preguntas.length;
       const best = getBest(key);
-      const card = el("button", "tema-card");
-      card.innerHTML =
+      const hasRepaso = !!(window.REPASO && window.REPASO[key]);
+      const card = el("div", "tema-card");
+      let html =
         `<h3>${escapeHTML(tema.titulo)}</h3>` +
         `<span class="count">${n} preguntas</span>` +
-        (best != null ? `<span class="best">🏆 Mejor resultado: ${best}%</span>` : `<span class="best">Sin intentos todavía</span>`);
-      card.addEventListener("click", () => startQuiz(key));
+        (best != null ? `<span class="best">🏆 Mejor resultado: ${best}%</span>` : `<span class="best">Sin intentos todavía</span>`) +
+        `<div class="mode-row">`;
+      html += `<button class="mode-btn primary" data-mode="test">📝 Test</button>`;
+      if (hasRepaso) {
+        html += `<button class="mode-btn" data-mode="flash">🃏 Flashcards</button>`;
+        html += `<button class="mode-btn" data-mode="match">🔗 Relacionar</button>`;
+        html += `<button class="mode-btn" data-mode="vf">✔️ V / F</button>`;
+      }
+      html += `</div>`;
+      card.innerHTML = html;
+      card.querySelectorAll(".mode-btn").forEach((b) => {
+        b.addEventListener("click", () => {
+          const m = b.getAttribute("data-mode");
+          if (m === "test") startQuiz(key);
+          else if (m === "flash") startFlashcards(key);
+          else if (m === "match") startMatching(key);
+          else if (m === "vf") startVF(key);
+        });
+      });
       list.appendChild(card);
     });
   }
@@ -223,6 +241,139 @@
       });
   }
 
+  // ===================================================
+  //  MODOS DE REPASO
+  // ===================================================
+  let flash = { items: [], idx: 0, flipped: false, key: null };
+  let match = { left: [], right: [], selectedL: null, pairs: 0, done: 0, key: null };
+  let vf = { items: [], idx: 0, aciertos: 0, key: null };
+
+  // ----- FLASHCARDS -----
+  function startFlashcards(key) {
+    const r = window.REPASO[key];
+    flash = { items: shuffle(r.flashcards), idx: 0, flipped: false, key };
+    $("#flashTitle").textContent = TEMAS[key].titulo;
+    show("flashcards");
+    renderFlash();
+  }
+  function renderFlash() {
+    const it = flash.items[flash.idx];
+    $("#flashProgress").textContent = `Tarjeta ${flash.idx + 1} de ${flash.items.length}`;
+    const card = $("#flashCard");
+    card.classList.toggle("flipped", flash.flipped);
+    $("#flashFront").textContent = it.t;
+    $("#flashBack").textContent = it.d;
+    $("#flashHint").textContent = flash.flipped ? "(definición — pulsa para ver el término)" : "(término — pulsa para ver la definición)";
+  }
+  function flipFlash() { flash.flipped = !flash.flipped; renderFlash(); }
+  function nextFlash() {
+    if (flash.idx < flash.items.length - 1) { flash.idx++; flash.flipped = false; renderFlash(); }
+    else { renderHome(); show("home"); }
+  }
+  function prevFlash() {
+    if (flash.idx > 0) { flash.idx--; flash.flipped = false; renderFlash(); }
+  }
+
+  // ----- RELACIONAR (matching) -----
+  function startMatching(key) {
+    const r = window.REPASO[key];
+    // Tomar hasta 8 parejas para que sea manejable
+    let pairs = shuffle(r.relacionar).slice(0, 8);
+    match = {
+      left: pairs.map((p, i) => ({ id: i, text: p.a, matched: false })),
+      right: shuffle(pairs.map((p, i) => ({ id: i, text: p.b, matched: false }))),
+      selectedL: null, pairs: pairs.length, done: 0, key
+    };
+    $("#matchTitle").textContent = TEMAS[key].titulo;
+    show("matching");
+    renderMatch();
+  }
+  function renderMatch() {
+    const colL = $("#matchLeft"); const colR = $("#matchRight");
+    colL.innerHTML = ""; colR.innerHTML = "";
+    $("#matchProgress").textContent = `Parejas: ${match.done} / ${match.pairs}`;
+    match.left.forEach((item) => {
+      const b = el("button", "match-item" + (item.matched ? " matched" : "") + (match.selectedL === item.id ? " selected" : ""));
+      b.textContent = item.text;
+      b.disabled = item.matched;
+      b.addEventListener("click", () => { match.selectedL = item.id; renderMatch(); });
+      colL.appendChild(b);
+    });
+    match.right.forEach((item) => {
+      const b = el("button", "match-item" + (item.matched ? " matched" : ""));
+      b.textContent = item.text;
+      b.disabled = item.matched;
+      b.addEventListener("click", () => tryMatch(item));
+      colR.appendChild(b);
+    });
+    if (match.done === match.pairs) {
+      const msg = el("div", "match-done", "✅ ¡Has relacionado todas las parejas!");
+      colR.parentElement.appendChild(msg);
+    }
+  }
+  function tryMatch(rightItem) {
+    if (match.selectedL == null) { flashMsg("Selecciona primero un elemento de la izquierda."); return; }
+    if (rightItem.id === match.selectedL) {
+      match.left.find((l) => l.id === match.selectedL).matched = true;
+      rightItem.matched = true;
+      match.done++; match.selectedL = null;
+      renderMatch();
+    } else {
+      flashMsg("❌ No coinciden, prueba otra vez.");
+      match.selectedL = null;
+      renderMatch();
+    }
+  }
+  function flashMsg(text) {
+    const m = $("#matchMsg");
+    m.textContent = text;
+    m.classList.add("show");
+    setTimeout(() => m.classList.remove("show"), 1200);
+  }
+
+  // ----- VERDADERO / FALSO -----
+  function startVF(key) {
+    const r = window.REPASO[key];
+    vf = { items: shuffle(r.vf), idx: 0, aciertos: 0, key };
+    $("#vfTitle").textContent = TEMAS[key].titulo;
+    show("vf");
+    renderVF();
+  }
+  function renderVF() {
+    const it = vf.items[vf.idx];
+    $("#vfProgress").textContent = `Afirmación ${vf.idx + 1} de ${vf.items.length}`;
+    $("#vfScore").textContent = `Aciertos: ${vf.aciertos}`;
+    $("#vfStatement").textContent = it.s;
+    $("#vfExp").classList.remove("show");
+    $("#vfExp").textContent = "";
+    $("#btnVerdadero").disabled = false;
+    $("#btnFalso").disabled = false;
+    $("#btnVfNext").disabled = true;
+  }
+  function answerVF(resp) {
+    const it = vf.items[vf.idx];
+    const ok = resp === it.v;
+    if (ok) vf.aciertos++;
+    $("#btnVerdadero").disabled = true;
+    $("#btnFalso").disabled = true;
+    const exp = $("#vfExp");
+    exp.innerHTML = (ok ? "✅ Correcto. " : "❌ Incorrecto. ") +
+      `<b>${it.v ? "VERDADERO" : "FALSO"}</b>. ${escapeHTML(it.e)}`;
+    exp.classList.add("show");
+    $("#vfScore").textContent = `Aciertos: ${vf.aciertos}`;
+    $("#btnVfNext").disabled = false;
+    $("#btnVfNext").textContent = vf.idx === vf.items.length - 1 ? "Finalizar" : "Siguiente →";
+  }
+  function nextVF() {
+    if (vf.idx < vf.items.length - 1) { vf.idx++; renderVF(); }
+    else {
+      alert(`Verdadero/Falso completado: ${vf.aciertos} de ${vf.items.length} aciertos.`);
+      renderHome(); show("home");
+    }
+  }
+
+  // ===================================================
+
   // ----- Eventos globales -----
   document.addEventListener("DOMContentLoaded", function () {
     renderHome();
@@ -239,5 +390,18 @@
       }
       startQuiz(state.temaKey, fallos);
     });
+
+    // Flashcards
+    $("#flashCard").addEventListener("click", flipFlash);
+    $("#btnFlashNext").addEventListener("click", nextFlash);
+    $("#btnFlashPrev").addEventListener("click", prevFlash);
+    $("#btnFlashExit").addEventListener("click", () => { renderHome(); show("home"); });
+    // Matching
+    $("#btnMatchExit").addEventListener("click", () => { renderHome(); show("home"); });
+    // V/F
+    $("#btnVerdadero").addEventListener("click", () => answerVF(true));
+    $("#btnFalso").addEventListener("click", () => answerVF(false));
+    $("#btnVfNext").addEventListener("click", nextVF);
+    $("#btnVfExit").addEventListener("click", () => { renderHome(); show("home"); });
   });
 })();

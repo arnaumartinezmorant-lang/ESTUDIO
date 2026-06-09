@@ -74,6 +74,62 @@
         <button id="btnHome" class="btn-ghost">Volver al inicio</button>
       </div>
     </section>
+
+    <!-- Pantalla FLASHCARDS -->
+    <section id="flashcards" class="screen">
+      <div class="quiz-head">
+        <button id="btnFlashExit" class="btn-ghost">← Salir</button>
+        <span id="flashTitle" class="quiz-title"></span>
+        <span id="flashProgress" class="progress"></span>
+      </div>
+      <div id="flashCard" class="flash-card">
+        <div class="flash-inner">
+          <div class="flash-face flash-front"><span id="flashFront"></span></div>
+          <div class="flash-face flash-back"><span id="flashBack"></span></div>
+        </div>
+      </div>
+      <p id="flashHint" class="flash-hint"></p>
+      <div class="quiz-foot">
+        <button id="btnFlashPrev" class="btn-secondary">← Anterior</button>
+        <button id="btnFlashNext" class="btn-primary">Siguiente →</button>
+      </div>
+    </section>
+
+    <!-- Pantalla RELACIONAR (matching) -->
+    <section id="matching" class="screen">
+      <div class="quiz-head">
+        <button id="btnMatchExit" class="btn-ghost">← Salir</button>
+        <span id="matchTitle" class="quiz-title"></span>
+        <span id="matchProgress" class="progress"></span>
+      </div>
+      <p class="match-instr">Selecciona un concepto de la izquierda y luego su pareja de la derecha.</p>
+      <div id="matchMsg" class="match-msg"></div>
+      <div class="match-cols">
+        <div id="matchLeft" class="match-col"></div>
+        <div id="matchRight" class="match-col"></div>
+      </div>
+    </section>
+
+    <!-- Pantalla VERDADERO / FALSO -->
+    <section id="vf" class="screen">
+      <div class="quiz-head">
+        <button id="btnVfExit" class="btn-ghost">← Salir</button>
+        <span id="vfTitle" class="quiz-title"></span>
+        <span id="vfProgress" class="progress"></span>
+      </div>
+      <div class="question-box">
+        <p id="vfStatement" class="q-text"></p>
+        <div class="vf-buttons">
+          <button id="btnVerdadero" class="btn-vf vf-true">✔️ Verdadero</button>
+          <button id="btnFalso" class="btn-vf vf-false">✖️ Falso</button>
+        </div>
+        <div id="vfExp" class="explanation"></div>
+      </div>
+      <div class="quiz-foot">
+        <span id="vfScore" class="score-live"></span>
+        <button id="btnVfNext" class="btn-primary" disabled>Siguiente →</button>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
@@ -82,11 +138,19 @@
 
   <!-- Datos de los temas -->
   <script src="data/tema01.js"></script>
+  <script src="data/tema01_extra.js"></script>
   <script src="data/tema02.js"></script>
+  <script src="data/tema02_extra.js"></script>
   <script src="data/tema02_organismos.js"></script>
+  <script src="data/tema02_organismos_extra.js"></script>
   <script src="data/tema03.js"></script>
+  <script src="data/tema03_extra.js"></script>
   <script src="data/tema04.js"></script>
+  <script src="data/tema04_extra.js"></script>
   <script src="data/tema05.js"></script>
+  <script src="data/tema05_extra.js"></script>
+  <!-- Repaso (flashcards, relacionar, verdadero/falso) -->
+  <script src="data/repaso.js"></script>
   <!-- Lógica -->
   <script src="app.js"></script>
 </body>
